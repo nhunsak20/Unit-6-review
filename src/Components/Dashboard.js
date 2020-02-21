@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux'
+import axios from 'axios'
 import PostDisplay from "./PostDisplay";
 
 class Dashboard extends Component {
@@ -11,32 +13,66 @@ class Dashboard extends Component {
   }
 
   componentDidMount() {
-
+    this.getPosts()
   }
 
   getPosts = () => {
-      
+      axios.get(`/api/posts/${this.props.user.id}`).then(res => {
+        console.log(res.data)
+        this.setState({
+          posts: res.data
+        })
+      }).catch(err => {
+        console.log(err)
+      })
   };
 
   handleChange = e => {
-    
+    this.setState({
+      userInput: e.target.value
+    })
   };
 
-  handleClick = () => {
+  sumbitNewPost = () => {
+    axios.post(`/api/posts/${this.props.user.id}`, {post: this.state.userInput}).then(() => {
+      this.getPosts()
+    }).catch(err => {
+      console.log(err)
+    })
+    this.resetInput()
   };
 
-  handleEdit = () => {
-   
+  handleEdit = (post_id, text) => {
+    axios.put(`/api/posts/${post_id}`, { text }).then(() => {
+      this.getPosts()
+    }).catch(err => {
+      console.log(err)
+    })
   };
 
-  handleDelete = () => {
+  handleDelete = post_id => {
+    axios.delete(`/api/posts/${post_id}`).then(()=> {
+      this.getPosts()
+    }).catch(err => {
+      console.log(err)
+    })
   };
+
+  resetInput() {
+    this.setState({
+      userInput: ''
+    })
+  }
 
   render() {
+    console.log(this.props.user)
     const mappedPosts = this.state.posts.map((post, index) => {
       return (
         <PostDisplay
-        //something goes here
+          key={index}
+          editFn={this.handleEdit}
+          removeFn={this.handleDelete}
+          post={post}
         />
       );
     });
@@ -48,16 +84,12 @@ class Dashboard extends Component {
             cols="60"
             rows="2"
             placeholder="New post..."
-            value={
-              //something goes here
-            }
+            value={ this.state.userInput }
             onChange={e => {
               this.handleChange(e);
             }}
           />
-          <button onClick={
-            //something goes here
-          } className="input-container-button">
+          <button onClick={ this.sumbitNewPost } className="input-container-button">
             Post
           </button>
         </div>
@@ -71,4 +103,11 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard;
+const mapStateToProps = reduxState => {
+  const { user } = reduxState
+  return {
+    user
+  }
+}
+
+export default connect(mapStateToProps)(Dashboard);

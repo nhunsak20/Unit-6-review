@@ -8,7 +8,7 @@ const Header = () => {
       <h1>SOSMS</h1>
       <div className="nav-links">
         <div>
-          <Link to="/dash">Dashboard</Link>
+          <Link to="/dashboard">Dashboard</Link>
         </div>
         <div>
           <Link to="/profile">Profile</Link>

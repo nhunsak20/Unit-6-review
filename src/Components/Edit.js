@@ -5,45 +5,47 @@ class Edit extends React.Component {
     super(props);
 
     this.state = {
-      //something goes here
+      postInput: props.text
     };
   }
 
   handleCancel = () => {
- 
-  };
+    this.setState({
+      postInput: this.props.text
+    })
+    this.props.toggleEdit()
+  };  
 
-  handleChange = () => {
-    
+  handleChange = event => {
+    console.log('hit')
+    this.setState({
+      postInput: event.target.value
+    })
   };
 
   render() {
+    const { id, editFn, toggleEdit } = this.props
     return (
       <li className="post-container">
         <div>
           <input
             className="post-text"
-            value={
-              //something goes here
-            }
-            onChange={
-              //something goes here
-            }
+            value={ this.state.postInput }
+            onChange={ this.handleChange }
           />
         </div>
         <div className="post-buttons">
             <button
               className="input-container-button-small"
-              onClick={() => {
-               //something goes here
-              }}
+              onClick={() => this.handleCancel() }
             >
               Cancel
             </button>
             <button
               className="input-container-button-small"
               onClick={() => {
-               //something goes here
+                editFn(id, this.state.postInput)
+                toggleEdit()
               }}
             >
               Save

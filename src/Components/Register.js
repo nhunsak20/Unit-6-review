@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux'
+import { getUser } from '../redux/reducer'
+import axios from 'axios'
 import { Link } from "react-router-dom";
 
 class Register extends Component {
@@ -11,11 +14,22 @@ class Register extends Component {
   }
 
   handleInput = event => {
-
+    this.setState({
+      [event.target.name]: event.target.value
+    })
   };
 
   handleRegister = () => {
-   
+    const { email, password } = this.state
+    axios.post('/api/register', {
+      email,
+      password
+    }).then(res => {
+      this.props.getUser(res.data)
+      this.props.history.push('/dashboard')
+    }).catch(err => {
+      console.log(err)
+    })
   };
 
   render() {
@@ -28,24 +42,18 @@ class Register extends Component {
                 maxLength="100"
                 placeholder="Enter Email"
                 name="email"
-                onChange={
-                  //something goes here
-                }
+                onChange={ this.handleInput }
               />
               <input
                 type="password"
                 maxLength="20"
                 placeholder="Enter Password"
                 name="password"
-                onChange={
-                  //something goes here
-                }
+                onChange={ event => this.handleInput(event) }
               />
             </div>
             <button
-              onClick={
-                //something goes here
-              }
+              onClick={ this.handleRegister }
               className="input-container-button"
             >
               Register
@@ -63,4 +71,4 @@ class Register extends Component {
   }
 }
 
-export default Register;
+export default connect(null, { getUser })(Register);
